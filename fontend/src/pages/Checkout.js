@@ -23,6 +23,10 @@ const Checkout = () => {
   );
 
   useEffect(() => {
+    if (!location?.state?.items) navigateTo("/");
+  }, []);
+
+  useEffect(() => {
     if (!user) navigateTo("/login");
     if (placeOrderData?.status == 1) {
       toast.success("order placed");
@@ -38,6 +42,7 @@ const Checkout = () => {
       shippingDetails.address &&
       shippingDetails.postalcode
     ) {
+      const finalData = [];
       location.state.items.forEach((element) => {
         const data = {
           ...shippingDetails,
@@ -45,8 +50,9 @@ const Checkout = () => {
           product_id: element.id,
           qty: element.cartQuantity,
         };
-        dispatch(placeOrder(data));
+        finalData.push(data);
       });
+      dispatch(placeOrder(finalData));
       if (isSuccess) {
         setplacingOrders(true);
         dispatch(clearCart());
